@@ -6,7 +6,7 @@
     // const authModel = require('./models/authModel');
     const authRoute = require('./routes/authRoute');
     const blogRoute = require('./routes/blogRoute');
-    const connectDB = require('../config/Database');
+    const connectDB = require('../config/database');
 
     connectDB()
 
