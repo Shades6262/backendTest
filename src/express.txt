@@ -1,0 +1,123 @@
+app.get('') -> It tells the server that we are creating a get route
+req-> Request
+res -> Response
+
+Query Params are an extra piece of information you attach to a URL 
+we use ? for Query parameter
+
+Route Params are Dynamic values that is in our URL path used to identify specific resource
+
+Body -> Is the Data the client sends to your server
+
+
+Middleware -> This is heart of express it runs between req and resource
+Types
+1. Inbuilt -> 
+a. express.json() -> [used to be called body Parser] it reads incoming req and check if the content has a Content-Type:application/json
+b. Cors -> it means Cross-origin resource sharing, it is a security feature so nobody will fetch your API anyhow, it is used by web browsers to control how API are fetched
+The core problem CORS solve, 
+
+Access control allow origin -> defines who can access the resource [* to allow all]
+Access control allow method ->  
+Access control allow Headers ->
+Access control allow Credentials ->
+
+
+
+
+2. Custom middle ware -> is a function we create to run before our route it has 3 params req, res, next
+
+1. Log req
+2. error handling
+3. Check auth
+4. validate Data
+5. Modify req
+6. 
+
+to call middleware we use app.use() is the function that mounts middleware 
+
+
+Database -> MongoDB
+ types
+ NoSQL -> not only SQL [uses collections], field and documents
+ SQL -> uses tables, rows and colums
+
+
+ MongoDB stores data in a similar format to JSON(but we call it BSON[binary-JSON])
+ MongoDb stores data into  documents those documents are stored in collections
+
+ Why do we use Database 
+
+
+ BSON -> extends JSON and allow mongoDb to store additional data types efficiently
+
+ CRUD-> CREATE READ UPDATE DELETE
+
+ MongoDB operations->> Insert, Find, Update and Delete
+
+ Insert->  one, many[we can use Create in place of insert]
+ Find-> Find one, Find and replace, find many, find by id
+ Update -> Update one, update many
+ Delete -> Delete one, Delete many
+
+ MongoDB architecture-> inside the mongoDB server we have the database itself and inside the database
+ we have the collections and inside the collection we have documents
+
+ 2 ways to connect MongoDB
+
+ 1. MongoDB Atlas-> we run it on the cloud, it is a fulll managed cloud Database
+ 2. MongoDb Local MongoDB -> we run the local one on our system, it is a free database that is installed on comp or server
+
+ Cloud Maintenance is automated
+
+ Cost for Atlas hs a generous free tier and a payed plan for more resources 
+
+ The other is completely free but you pay for the server it is run on
+
+ Lastly -> the test for production
+
+ Atlas (learning without setup)
+
+ Local(learn how MongoDb works internally)
+
+
+
+
+
+ Authentication and Authorization ->  Authentication is like when you want to enter school gate and you show them ID card
+                                      Are you a real user ? yes : no-> verifies the user identity/Credentials
+
+                                      Authorizatuion -> After checking if Authentication is correct then Authorization allows you to proceed
+                                      Determines if an authenticated user has the permissions or role (e.g., admin vs. user) to access specific routes or resources.
+
+JWT -> it means JSON web token it is a temporary id card given to  user 
+How does the server remember user after login
+
+In authentication we use middleware as a middle guard to check if our token is correct by setting a duration(checking if the token is valid the service continues)
+
+ways to generate JWT -> wont even generate youll just write one big english and put __ to separate them
+ second method is generating a raandom binary number
+
+
+Some routes should only be accessible to users when they are logged In
+it is a route that cannot be accessed without JWT token.
+
+THE JWT is stored in cookies or loacalstorage
+
+
+Authorization -> THis checkes roles 
+for ec=xample if the user tries to delete product the backend needs to know if its user or Admin
+
+
+multer -> is a node.js middle ware used for handling multipart files it is used and required for imges, audio, video and pdf
+
+cloudinary-> stores the files in the cloud nd multer gets the files from express
+
+Node Mailer-> We use it to send mail in Node.JS suppose user forget password how do user request forgotten password
+
+simple mail transfer protocol innit[SMTP]-> it is a protocol 
+
+mail.js is used to configure the smtp details 
+
+two type of port 465 and 587 on miss gbemi laptop 587 didnt work on it so her students used it...
+587 with start TLS connection starts normally in node mailer x

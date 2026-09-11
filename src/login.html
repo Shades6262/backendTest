@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #f8fafc;
+      }
+
+      form {
+        background: #1e293b;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid #334155;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #cbd5e1;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        background: #0f172a;
+        border: 1px solid #475569;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 14px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+      }
+
+      button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-bottom: 12px;
+      }
+
+      button[type="submit"]:hover {
+        background: #0ea5e9;
+      }
+
+      button[type="button"] {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        color: #94a3b8;
+        border: 1px solid #475569;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button[type="button"]:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="http://localhost:5500/api/auth/login" method="post">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required /><br /><br />
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+      /><br /><br />
+      <button type="submit">Login</button>
+      <button type="button" onclick="window.location.href = 'index.html'">
+        Don't have an account? Register
+      </button>
+    </form>
+  </body>
+</html>
