@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/authModel');
 const jwt = require('jsonwebtoken');
 const sendMail = require('../utils/sendMail');
+const crypto = require('crypto');
 
 
 
@@ -43,7 +44,7 @@ const registerUser = async (req, res) => {
 
                         <div style="text-align: center; margin: 30px 0;">
                             <!-- Swap the href with your actual frontend login route -->
-                            <a href="https://your-app-link.com/login" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; border-radius: 5px; display: inline-block;">Access Dashboard</a>
+                            <a href="https://backend-test-liart.vercel.app/login.html" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; border-radius: 5px; display: inline-block;">Access Dashboard</a>
                         </div>
 
                         <hr style="border: 0; height: 1px; background-color: #334155; margin: 25px 0 15px 0;">
@@ -112,4 +113,83 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = {registerUser, loginuser, profIle, deleteUser};
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        await user.save();
+
+        const resetUrl = `https://backend-test-liart.vercel.app/reset-password.html?token=${resetToken}`;
+
+        await sendMail({
+            to: user.email,
+            subject: 'Password Reset Request',
+            html: `<div style="background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border-radius: 10px; border-top: 4px solid #3b82f6;">
+                        <h1 style="color: #60a5fa; font-size: 2rem; margin-top: 0; margin-bottom: 10px;">Password Reset</h1>
+                        <div style="background-color: #1e293b; padding: 20px; border-radius: 6px; border-left: 3px solid #3b82f6; margin-bottom: 25px;">
+                            <p style="margin: 0; line-height: 1.6; font-size: 1.05rem;">
+                                You requested a password reset. Please click the button below to reset your password. This link expires in 10 minutes.
+                            </p>
+                        </div>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetUrl}" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; border-radius: 5px; display: inline-block;">Reset Password</a>
+                        </div>
+                        <hr style="border: 0; height: 1px; background-color: #334155; margin: 25px 0 15px 0;">
+                        <p style="color: #64748b; font-size: 0.85rem; text-align: center; margin: 0;">
+                            If you didn't request this, please ignore this email.<br>
+                            &copy; 2026 Your App Name.
+                        </p>
+                    </div>`
+        });
+
+        res.status(200).json({ message: 'Password reset email sent successfully' });
+    } catch (err) {
+        console.error("Forgot Password Error:", err);
+        res.status(500).json({ message: 'Server error: ' + (err.message || 'Unknown error') });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ message: 'Please provide a new password' });
+        }
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save();
+
+        res.status(200).json({ message: 'Password reset successfully' });
+    } catch (err) {
+        console.error("Reset Password Error:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+module.exports = {registerUser, loginuser, profIle, deleteUser, forgotPassword, resetPassword};

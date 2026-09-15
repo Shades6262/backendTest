@@ -17,7 +17,9 @@ const authSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         default: 'user',
-    }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
 }, { timestamps: true });
 
 const User = mongoose.model('User', authSchema);

@@ -2,6 +2,7 @@
     const cors = require("cors");
     const express = require("express");
     const fs = require("fs");
+    const path = require("path");
     // const { register } = require("module");
     // const authModel = require('./models/authModel');
     const authRoute = require('./routes/authRoute');
@@ -19,6 +20,7 @@
     app.use(cors())
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
+    app.use(express.static(__dirname))
 
     const logger = (req, res, next) => {
         console.log(`${new Date().toISOString()} ${req.method} ${req.url}`)

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Login - Backend App</title>
     <style>
       * {
         box-sizing: border-box;
@@ -21,7 +21,7 @@
         color: #f8fafc;
       }
 
-      form {
+      form, .modal-box {
         background: #1e293b;
         padding: 40px;
         border-radius: 12px;
@@ -29,6 +29,12 @@
         width: 100%;
         max-width: 400px;
         border: 1px solid #334155;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #38bdf8;
+        text-align: center;
       }
 
       label {
@@ -48,9 +54,7 @@
         border-radius: 6px;
         color: #fff;
         font-size: 14px;
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s;
       }
 
       input:focus {
@@ -77,7 +81,7 @@
         background: #0ea5e9;
       }
 
-      button[type="button"] {
+      button.secondary-btn {
         width: 100%;
         padding: 10px;
         background: transparent;
@@ -87,29 +91,150 @@
         font-size: 14px;
         cursor: pointer;
         transition: all 0.2s;
+        margin-bottom: 10px;
       }
 
-      button[type="button"]:hover {
+      button.secondary-btn:hover {
         background: #334155;
         color: #f8fafc;
+      }
+
+      .forgot-link {
+        display: block;
+        text-align: right;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #38bdf8;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .forgot-link:hover {
+        text-decoration: underline;
+      }
+
+      #message {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal.active {
+        display: flex;
       }
     </style>
   </head>
   <body>
-    <form action="https://backendtest-ekev.onrender.com/api/auth/login" method="post">
+    <form id="loginForm">
+      <h2>Login</h2>
       <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required /><br /><br />
+      <input type="email" id="email" name="email" required />
+      
       <label for="password">Password:</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-      /><br /><br />
+      <input type="password" id="password" name="password" required />
+      
+      <a class="forgot-link" id="openForgotModal">Forgot Password?</a>
+
       <button type="submit">Login</button>
-      <button type="button" onclick="window.location.href = 'index.html'">
+      <button type="button" class="secondary-btn" onclick="window.location.href = 'index.html'">
         Don't have an account? Register
       </button>
+      <div id="message"></div>
     </form>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotModal">
+      <div class="modal-box">
+        <h2>Reset Password</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Enter your email to receive a password reset link.</p>
+        <label for="forgotEmail">Email:</label>
+        <input type="email" id="forgotEmail" required />
+        <button type="button" id="submitForgot" style="width: 100%; padding: 12px; background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom: 10px;">Send Reset Link</button>
+        <button type="button" class="secondary-btn" id="closeForgotModal">Cancel</button>
+        <div id="forgotMessage" style="margin-top: 10px; font-size: 13px; text-align: center;"></div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = 'https://backendtest-ekev.onrender.com';
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const msgDiv = document.getElementById('message');
+
+        try {
+          const res = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+
+          if (res.ok) {
+            localStorage.setItem('token', data.token);
+            msgDiv.style.color = '#38bdf8';
+            msgDiv.textContent = 'Login successful! Redirecting to dashboard...';
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 1000);
+          } else {
+            msgDiv.style.color = '#f87171';
+            msgDiv.textContent = data.message || 'Invalid credentials';
+          }
+        } catch (err) {
+          msgDiv.style.color = '#f87171';
+          msgDiv.textContent = 'Server error. Please try again.';
+        }
+      });
+
+      const modal = document.getElementById('forgotModal');
+      document.getElementById('openForgotModal').addEventListener('click', () => {
+        modal.classList.add('active');
+      });
+      document.getElementById('closeForgotModal').addEventListener('click', () => {
+        modal.classList.remove('active');
+      });
+
+      document.getElementById('submitForgot').addEventListener('click', async () => {
+        const email = document.getElementById('forgotEmail').value;
+        const msg = document.getElementById('forgotMessage');
+        if (!email) {
+          msg.style.color = '#f87171';
+          msg.textContent = 'Please enter your email';
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+
+          if (res.ok) {
+            msg.style.color = '#38bdf8';
+            msg.textContent = data.message || 'Reset link sent! Check your email.';
+          } else {
+            msg.style.color = '#f87171';
+            msg.textContent = data.message || 'Error sending reset email';
+          }
+        } catch (err) {
+          msg.style.color = '#f87171';
+          msg.textContent = 'Server error. Please try again.';
+        }
+      });
+    </script>
   </body>
 </html>
