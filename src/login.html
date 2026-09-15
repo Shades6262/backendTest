@@ -165,7 +165,7 @@
     </div>
 
     <script>
-      const API_URL = 'https://backendtest-ekev.onrender.com';
+      const API_URL = 'http://localhost:5050';
 
       document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -215,6 +215,9 @@
           return;
         }
 
+        msg.style.color = '#cbd5e1';
+        msg.textContent = 'Sending reset link...';
+
         try {
           const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
             method: 'POST',
@@ -231,8 +234,9 @@
             msg.textContent = data.message || 'Error sending reset email';
           }
         } catch (err) {
+          console.error(err);
           msg.style.color = '#f87171';
-          msg.textContent = 'Server error. Please try again.';
+          msg.textContent = 'Network error. Check console (F12).';
         }
       });
     </script>

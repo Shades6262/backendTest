@@ -17,7 +17,7 @@
     const PORT = process.env.PORT || 5050;
 
     //middleware
-    app.use(cors())
+    app.use(cors({ origin: true, credentials: true }))
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
     app.use(express.static(__dirname))
